@@ -9,6 +9,7 @@ global x, y
 import mouse
 import tkinter as tkr
 from PIL import Image, ImageTk
+from cryptography.fernet import Fernet
 from tkinter import messagebox as mbox
 
 root = tkr.Tk()
@@ -18,14 +19,16 @@ root = tkr.Tk()
 root.wm_attributes("-topmost", 1)
     # names the Tk root window
 root.title("Image Selector")
-
+    # sets the size of the window
 root.geometry("600x360")
+
     # gets the current directory containing the python file
 Dir = os.getcwd()
-
     # determine the suffix of image and adds it to a list
 extension = ".png", ".jpg", ".jpeg", ".gif", ".tiff", ".bmp", ".esp", ".icns", ".ico", ".im", ".jfif", ".msp", ".pcx", ".sgi", ".spider", ".webp", ".xbm", ".blp", ".cur", ".dcx", ".dds", ".fli", ".flc", ".fpx", ".ftex", ".gbr", ".gd", ".imt", ".iptc", ".naa", ".mcidas", ".mic", ".mpo", ".pcd", ".pixar", ".psd", ".tga", ".wal", ".xpm", ".PNG", ".JPG", ".JPEG", ".GIF", ".TIFF", ".BMP", ".ESP", ".ICNS", ".ICO", ".IM", ".JFIF", ".MSP", ".PCX", ".SGI", ".SPIDER", ".WEBP", ".XBM", ".BLP", ".CUR", ".DCX", ".DDS", ".FLI", ".FLC", ".FPX", ".FTEX", ".GBR", ".GD", ".IMT", ".IPTC", ".NAA", ".MCIDAS", ".MIC", ".MPO", ".PCD", ".PIXAR", ".PSD", ".TGA", ".WAL", ".XPM"
 file = [_ for _ in os.listdir(Dir) if _.endswith(extension)]
+#print(file)
+#print(file[1])
 
 def showimg(e):
     n = lst.curselection()    # returns the name of current selected item in list
@@ -72,6 +75,10 @@ def showimg(e):
     return thumbimage
     
 def hide():
+        # deletes decrypted files
+    os.remove('Background.PNG')
+    os.remove('Format.PNG')
+    os.remove('resized.png')
         # creates bind for movement of mouse
     def standard_bind():
         root.bind('<B1-Motion>', lambda e: event(e, Mode=True))
@@ -135,9 +142,67 @@ if file == []:   # if list is empty:
     mbox.showerror("ERROR", "Image could not be found")
     raise SystemExit
 else:
+        # Run GUI code
+        # reads the encryption key
+    keyfile = open('key.key', 'rb')  # open the file as wb to read bytes
+    key = keyfile.read()  # the key will be type bytes
+        # decrypts the image
+    eFormat_file = 'Format.encrypted'
+    Format_file = 'Format.PNG'
+
+    with open(eFormat_file, 'rb') as f:
+        data = f.read()  # read the bytes of the encrypted image
+
+    fernet = Fernet(key)
+    try:
+        decrypted = fernet.decrypt(data)
+
+        with open(Format_file, 'wb') as f:
+            f.write(decrypted)  # write the decrypted bytes to the output file
+
+    except InvalidToken as e:
+            # error window execution
+        root.withdraw()
+        mbox.showerror("ERROR", "An ERROR has occured please reinstall the program")
+        raise SystemExit
+
+        # decrypts the image
+    eBackground_file = 'Background.encrypted'
+    Background_file = 'Background.PNG'
+
+    with open(eBackground_file, 'rb') as f:
+        data = f.read()  # read the bytes of the encrypted image
+
+    fernet = Fernet(key)
+    try:
+        decrypted = fernet.decrypt(data)
+
+        with open(Background_file, 'wb') as f:
+            f.write(decrypted)  # write the decrypted bytes to the output file
+            keyfile.close()
+    except InvalidToken as e:
+            # error window execution
+        root.withdraw()
+        mbox.showerror("ERROR", "An ERROR has occured please reinstall the program")
+        raise SystemExit
+    #print(file)
+    for fname in file:
+        if fname == 'Background.PNG':
+            file.remove('Background.PNG')
+            #print(file)
+    for fname in file:
+        if fname == 'Format.PNG':
+            file.remove('Format.PNG')
+            #print(file)
+    for fname in file:
+        if fname == 'resized.png':
+            file.remove('resized.png')
+            #print(file)
+    #print(file)
         # displays image as background
     C = tkr.Canvas(root, bg="blue", height=600, width=360)
-    filename = tkr.PhotoImage(file = "F:/Documents/Untitled-8.png")
+    BG = os.path.join(Dir, "Background.PNG")
+    filename = tkr.PhotoImage(file = BG)
     background_label = tkr.Label(root, image=filename)
     background_label.place(x=0, y=0, relwidth=1, relheight=1, anchor="nw")
     C.place()
@@ -160,17 +225,14 @@ else:
     buttonsub = tkr.Button(root, text='Select', command=hide)
     buttonsub.grid(column=1, row=3, sticky=tkr.SW, padx=2, pady=6)
         # creates formating for GUI
-    forImage = tkr.PhotoImage(file="F:/Documents/Untitled-7.png")
-    forimg = tkr.Label(root, image=forImage)
-    forimg.lower()
-    forimg.place()
     forlab = tkr.Label(root)
     forlab.lower()
     forlab.grid(column=4, row=0, rowspan=4, pady=50, sticky=tkr.N+tkr.E+tkr.S+tkr.W)
     forlab1 = tkr.Label(root)
     forlab1.lower()
     forlab1.grid(column=3, row=0, padx=50, sticky=tkr.N+tkr.E+tkr.S+tkr.W)
-    forimg1 = tkr.PhotoImage(file='F:/Documents/Python/111Capture.PNG')
+    ForI1 = os.path.join(Dir, 'Format.PNG')
+    forimg1 = tkr.PhotoImage(file=ForI1)
     fortimg = tkr.Label(root, image=forimg1)
     fortimg.lower()
     fortimg.grid(column=1, row=2, columnspan=3)
