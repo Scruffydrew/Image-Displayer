@@ -31,6 +31,7 @@ file = [_ for _ in os.listdir(Dir) if _.endswith(extension)]
 #print(file[1])
 
 def showimg(e):
+    lab.lift()
     n = lst.curselection()    # returns the name of current selected item in list
     fname = lst.get(n)
     file_path = os.path.join(Dir, fname)    # combines directory with ImageName to create image path
@@ -214,8 +215,9 @@ else:
         lst.insert(tkr.END, fname)
         lst.bind('<<ListboxSelect>>', showimg)
         # display respected image on GUI
-    img = tkr.PhotoImage(file=file[1])
+    img = tkr.PhotoImage()
     lab = tkr.Label(root, image=img, borderwidth=2, relief="solid", bg="white")
+    lab.lower()
     lab.grid(column=1, row=2, columnspan=3)
         # display Label on GUI
     lbl = tkr.Label(root, text="Select an Image to display")
