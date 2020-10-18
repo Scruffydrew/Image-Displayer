@@ -115,7 +115,7 @@ def hide():
         mouseX, mouseY = pyautogui.position()
         #print('Mouse X =', mouseX)###########################################
         #print('Mouse Y =', mouseY)###########################################
-        
+            # keeps window on screen
         if WindowX <= int(-ScreenWidth + WindowWidth - 1):
             WindowX = int((-1*ScreenWidth) + WindowWidth)
             root.geometry('%dx%d+%d+%d' % (WindowWidth, WindowHeight, WindowX, WindowY))
@@ -139,7 +139,7 @@ def hide():
             root.geometry('%dx%d+%d+%d' % (WindowWidth, WindowHeight, WindowX, WindowY))
             root.bind('<B1-Motion>', lambda e: event(e, Mode=True))
             root.bind('<ButtonRelease-1>', lambda e: standard_bind())
-            
+            #   keeps mouse on window when dragging window
         if mouseX <= (WindowX):
             WindowX = mouseX-5
             WindowY = WindowY+5
