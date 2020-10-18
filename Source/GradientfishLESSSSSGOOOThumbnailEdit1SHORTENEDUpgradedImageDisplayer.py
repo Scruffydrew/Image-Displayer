@@ -7,6 +7,7 @@ Created on Wed Aug  5 13:51:18 2020
 import os
 global x, y
 import mouse
+import pyautogui
 import tkinter as tkr
 from PIL import Image, ImageTk
 from cryptography.fernet import Fernet
@@ -27,8 +28,8 @@ Dir = os.getcwd()
     # determine the suffix of image and adds it to a list
 extension = ".png", ".jpg", ".jpeg", ".gif", ".tiff", ".bmp", ".esp", ".icns", ".ico", ".im", ".jfif", ".msp", ".pcx", ".sgi", ".spider", ".webp", ".xbm", ".blp", ".cur", ".dcx", ".dds", ".fli", ".flc", ".fpx", ".ftex", ".gbr", ".gd", ".imt", ".iptc", ".naa", ".mcidas", ".mic", ".mpo", ".pcd", ".pixar", ".psd", ".tga", ".wal", ".xpm", ".PNG", ".JPG", ".JPEG", ".GIF", ".TIFF", ".BMP", ".ESP", ".ICNS", ".ICO", ".IM", ".JFIF", ".MSP", ".PCX", ".SGI", ".SPIDER", ".WEBP", ".XBM", ".BLP", ".CUR", ".DCX", ".DDS", ".FLI", ".FLC", ".FPX", ".FTEX", ".GBR", ".GD", ".IMT", ".IPTC", ".NAA", ".MCIDAS", ".MIC", ".MPO", ".PCD", ".PIXAR", ".PSD", ".TGA", ".WAL", ".XPM"
 file = [_ for _ in os.listdir(Dir) if _.endswith(extension)]
-#print(file)
-#print(file[1])
+#print(file)##################################################################
+#print(file[1])###############################################################
 
 def showimg(e):
     lab.lift()
@@ -91,7 +92,75 @@ def hide():
             y = widget.y
         root.bind('<B1-Motion>', lambda e: event(e))
         root.geometry('+%d+%d' % (mouse.get_position()[0]-x, mouse.get_position()[1]-y))
+    
+        ScreenWidth = root.winfo_screenwidth()  # screen width
+        ScreenHeight = root.winfo_screenheight()    # screen height
+
+        #print('Screen Width =', ScreenWidth)#################################
+        #print('Screen Height =', ScreenHeight)###############################
+
+        WindowWidth = root.winfo_width()    # window width
+        WindowHeight = root.winfo_height()  # window height
+
+        #print('Window Width =', WindowWidth)#################################
+        #print('Window Height =', WindowHeight)###############################
+
+        WindowX = root.winfo_x()    # window X position
+        WindowY = root.winfo_y()    # window Y position
+
+        #print('Window X =', WindowX)#########################################
+        #print('Window Y =', WindowY)#########################################
+    
+        #while True: print(pyautogui.position())##############################
+        mouseX, mouseY = pyautogui.position()
+        #print('Mouse X =', mouseX)###########################################
+        #print('Mouse Y =', mouseY)###########################################
         
+        if WindowX <= int(-ScreenWidth + WindowWidth - 1):
+            WindowX = int((-1*ScreenWidth) + WindowWidth)
+            root.geometry('%dx%d+%d+%d' % (WindowWidth, WindowHeight, WindowX, WindowY))
+            root.bind('<B1-Motion>', lambda e: event(e, Mode=True))
+            root.bind('<ButtonRelease-1>', lambda e: standard_bind())
+        
+        if WindowY >= int(ScreenHeight - WindowHeight + 1):
+            WindowY = int(ScreenHeight - WindowHeight)
+            root.geometry('%dx%d+%d+%d' % (WindowWidth, WindowHeight, WindowX, WindowY)) 
+            root.bind('<B1-Motion>', lambda e: event(e, Mode=True))
+            root.bind('<ButtonRelease-1>', lambda e: standard_bind())            
+        
+        if WindowX >= int(ScreenWidth - WindowWidth + 1):
+            WindowX = int(ScreenWidth - WindowWidth)
+            root.geometry('%dx%d+%d+%d' % (WindowWidth, WindowHeight, WindowX, WindowY))  
+            root.bind('<B1-Motion>', lambda e: event(e, Mode=True))
+            root.bind('<ButtonRelease-1>', lambda e: standard_bind())
+            
+        if WindowY <= int(-1):
+            WindowY = int(0)
+            root.geometry('%dx%d+%d+%d' % (WindowWidth, WindowHeight, WindowX, WindowY))
+            root.bind('<B1-Motion>', lambda e: event(e, Mode=True))
+            root.bind('<ButtonRelease-1>', lambda e: standard_bind())
+            
+        if mouseX <= (WindowX):
+            WindowX = mouseX-5
+            WindowY = WindowY+5
+            root.geometry('%dx%d+%d+%d' % (WindowWidth, WindowHeight, WindowX, WindowY))
+            #print(mouseX)####################################################
+        if mouseX >= (WindowX + WindowWidth):
+            WindowX = (mouseX-WindowWidth+5)
+            WindowY = WindowY-5
+            root.geometry('%dx%d+%d+%d' % (WindowWidth, WindowHeight, WindowX, WindowY))
+            #print(mouseX)####################################################
+        if mouseY <= (WindowY):
+            WindowY = mouseY-5
+            WindowX = WindowX+5
+            root.geometry('%dx%d+%d+%d' % (WindowWidth, WindowHeight, WindowX, WindowY))
+            #print(mouseY)####################################################
+        if mouseY >= (WindowY + WindowHeight):
+            WindowY = (mouseY-WindowWidth+5)
+            WindowX = WindowX-5
+            root.geometry('%dx%d+%d+%d' % (WindowWidth, WindowHeight, WindowX, WindowY))
+            #print(mouseY)####################################################
+    
     imgName = showimg(fname)    # get variable 'ImageName' from showimg
     thumbnailname = 'resized.png'
     thumbnail = os.path.join(Dir, thumbnailname)    # combines directory path with thumbnail name to create thumbnail path
@@ -118,6 +187,7 @@ def hide():
             # calculate x and y coordinates for the Tk root window
         x = (ws/2) - (w/2)
         y = (hs/2) - (h/2)
+        #print(ws, hs, x, y, w, h, X, Y)######################################
             # allows for window to be dragged
         root.bind('<B1-Motion>', lambda e: event(e, Mode=True))
         root.bind('<ButtonRelease-1>', lambda e: standard_bind())
@@ -186,20 +256,20 @@ else:
         root.withdraw()
         mbox.showerror("ERROR", "An ERROR has occured please reinstall the program")
         raise SystemExit
-    #print(file)
+    #print(file)##############################################################
     for fname in file:
         if fname == 'Background.PNG':
             file.remove('Background.PNG')
-            #print(file)
+            #print(file)######################################################
     for fname in file:
         if fname == 'Format.PNG':
             file.remove('Format.PNG')
-            #print(file)
+            #print(file)######################################################
     for fname in file:
         if fname == 'resized.png':
             file.remove('resized.png')
-            #print(file)
-    #print(file)
+            #print(file)######################################################
+    #print(file)##############################################################
         # displays image as background
     C = tkr.Canvas(root, bg="blue", height=600, width=360)
     BG = os.path.join(Dir, "Background.PNG")
