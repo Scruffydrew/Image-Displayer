@@ -7,9 +7,11 @@ Created on Wed Aug  5 13:51:18 2020
 import os
 global x, y
 import mouse
+import keyboard
 import pyautogui
 import tkinter as tkr
 from PIL import Image, ImageTk
+from pynput.keyboard import Listener
 from cryptography.fernet import Fernet
 from tkinter import messagebox as mbox
 
@@ -63,8 +65,7 @@ def showimg(e):
     elif change == 0:   # reduce size of image via width
         wpercent = (desiredWidth/float(img.size[0]))
         hsize = int((float(img.size[1])*float(wpercent)))
-        wsize = int((float(wpercent)*float(img.size[0])))
-        thumbimg = img.resize((wsize,hsize), Image.ANTIALIAS)
+        thumbimg = img.resize((desiredWidth,hsize), Image.ANTIALIAS)
         thumbimg.save('resized.png')
         thumbimage = tkr.PhotoImage(file='resized.png')
     else:
@@ -75,12 +76,13 @@ def showimg(e):
     ImageName = fname
     return ImageName
     return thumbimage
-    
+   
 def hide():
         # deletes decrypted files
     os.remove('Background.PNG')
     os.remove('Format.PNG')
     os.remove('resized.png')
+
         # creates bind for movement of mouse
     def standard_bind():
         root.bind('<B1-Motion>', lambda e: event(e, Mode=True))
@@ -160,7 +162,7 @@ def hide():
             WindowX = WindowX-5
             root.geometry('%dx%d+%d+%d' % (WindowWidth, WindowHeight, WindowX, WindowY))
             #print(mouseY)####################################################
-    
+
     imgName = showimg(fname)    # get variable 'ImageName' from showimg
     thumbnailname = 'resized.png'
     thumbnail = os.path.join(Dir, thumbnailname)    # combines directory path with thumbnail name to create thumbnail path
@@ -168,6 +170,7 @@ def hide():
         # removes all elements on the window
     for ele in root.winfo_children():
         ele.destroy()
+
     if file != []:  # if list is not empty:
         os.remove(thumbnail)    # deletes the thumbnail image used when selecting the desired image
             # names the Tk root window
@@ -188,6 +191,20 @@ def hide():
         x = (ws/2) - (w/2)
         y = (hs/2) - (h/2)
         #print(ws, hs, x, y, w, h, X, Y)######################################
+        if w >= (ws+1):    # reduce size of image via height
+            hpc = (ws/float(h))
+            wsiz = int((float(w)*float(hpc)))
+            Desiredimg = image.resize((wsiz,hs), Image.ANTIALIAS)
+            Desiredimg.save('DisplayIMG.png')
+            Desiredimage = tkr.PhotoImage(file='DisplayIMG.png')
+        elif h >= (hs+1):   # reduce size of image via width
+            wpc = (ws/float(w))
+            hsiz = int((float(h)*float(wpc)))
+            Desiredimg = image.resize((ws,hsiz), Image.ANTIALIAS)
+            Desiredimg.save('DisplayIMG.png')
+            Desiredimage = tkr.PhotoImage(file='DisplayIMG.png')
+        else:
+            Desiredimage = tkr.PhotoImage(file=filename)
             # allows for window to be dragged
         root.bind('<B1-Motion>', lambda e: event(e, Mode=True))
         root.bind('<ButtonRelease-1>', lambda e: standard_bind())
@@ -195,17 +212,20 @@ def hide():
             # set the dimensions of the screen and where it is placed
         root.geometry('%dx%d+%d+%d' % (w, h, X, Y))
             # sets image to a label
-        imgfinal = ImageTk.PhotoImage(file=filename)
+        imgfinal = Desiredimage
             # creates label to display image on
         lbl = tkr.Label(root, image = imgfinal)
         lbl.image = imgfinal
         lbl.pack()
-        return x, y    
+        return x, y
+        #print('x,y returned')################################################
+        #print('x,y to be returned')##########################################
     else:
             # error window execution
         root.withdraw()
         mbox.showerror("ERROR", "Image was found but was unable to display it")
         raise SystemExit
+
     # if image can't be found an error message will appear
 if file == []:   # if list is empty:
         # error window execution
@@ -308,5 +328,7 @@ else:
     fortimg = tkr.Label(root, image=forimg1)
     fortimg.lower()
     fortimg.grid(column=1, row=2, columnspan=3)
-    
+
+
+
 root.mainloop()
